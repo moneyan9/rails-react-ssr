@@ -76,3 +76,14 @@ export async function saveItem(path: string, method: "POST" | "PATCH", input: It
     throw new Response("Rails items request failed", { status: response.status });
   }
 }
+
+export async function deleteItem(id: string) {
+  const response = await fetch(`${RAILS_ORIGIN}/api/v1/items/${id}`, {
+    method: "DELETE",
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Response("Rails items request failed", { status: response.status });
+  }
+}

@@ -1,6 +1,12 @@
+import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Container from "@mui/material/Container";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
@@ -10,9 +16,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
-import { Link } from "react-router";
+import { Link, useFetcher } from "react-router";
 
-import { readItems } from "../items/api";
+import { deleteItem, readItems, type Item } from "../items/api";
 import type { Route } from "./+types/home";
 
 const yen = new Intl.NumberFormat("ja-JP", {
@@ -29,7 +35,23 @@ export async function loader(_args: Route.LoaderArgs) {
   return { items: await readItems() };
 }
 
+export async function action({ request }: Route.ActionArgs) {
+  const id = String((await request.formData()).get("id") ?? "");
+  await deleteItem(id);
+  return { deleted: true };
+}
+
 export default function Home({ loaderData }: Route.ComponentProps) {
+  const fetcher = useFetcher<typeof action>();
+  const [pending, setPending] = useState<Item | null>(null);
+  const deleting = fetcher.state !== "idle";
+
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data?.deleted) {
+      setPending(null);
+    }
+  }, [fetcher.state, fetcher.data]);
+
   return (
     <Container component="main" maxWidth="md" sx={{ py: 4 }}>
       <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 2 }}>
@@ -68,12 +90,44 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                   <Button component={Link} to={`/items/${item.id}/edit`} size="small">
                     編集
                   </Button>
+                  <Button size="small" color="error" onClick={() => setPending(item)}>
+                    削除
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
+      <Dialog
+        open={pending !== null}
+        onClose={() => {
+          if (!deleting) setPending(null);
+        }}
+      >
+        <DialogTitle>商品を削除</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {pending ? `${pending.sku} ${pending.name} を削除します。` : ""}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPending(null)} disabled={deleting}>
+            キャンセル
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={pending === null || deleting}
+            onClick={() => {
+              if (!pending) return;
+              fetcher.submit({ id: String(pending.id) }, { method: "delete" });
+            }}
+          >
+            削除
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
