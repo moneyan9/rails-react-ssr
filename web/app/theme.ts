@@ -7,4 +7,13 @@ export const theme = createTheme({
   typography: {
     fontFamily: ["Inter", "sans-serif"].join(","),
   },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          minHeight: "100vh",
+        },
+      },
+    },
+  },
 });
