@@ -1,5 +1,8 @@
+import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -7,11 +10,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
+import { Link } from "react-router";
 
+import { readItems } from "../items/api";
 import type { Route } from "./+types/home";
-
-const RAILS_ORIGIN = "http://127.0.0.1:3000";
 
 const yen = new Intl.NumberFormat("ja-JP", {
   style: "currency",
@@ -19,36 +21,25 @@ const yen = new Intl.NumberFormat("ja-JP", {
   maximumFractionDigits: 0,
 });
 
-type Item = {
-  id: number;
-  sku: string;
-  name: string;
-  unit_price: number;
-  status: string;
-  updated_at: string;
-};
-
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Items" }];
 }
 
 export async function loader(_args: Route.LoaderArgs) {
-  const response = await fetch(`${RAILS_ORIGIN}/api/v1/items`);
-
-  if (!response.ok) {
-    throw new Response("Rails items request failed", { status: response.status });
-  }
-
-  const body = (await response.json()) as { items: Item[] };
-  return { items: body.items };
+  return { items: await readItems() };
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
   return (
     <Container component="main" maxWidth="md" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Items
-      </Typography>
+      <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+        <Typography variant="h4" component="h1">
+          Items
+        </Typography>
+        <Button component={Link} to="/items/new" variant="contained">
+          新規
+        </Button>
+      </Stack>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -57,6 +48,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               <TableCell>商品名</TableCell>
               <TableCell align="right">単価</TableCell>
               <TableCell>状態</TableCell>
+              <TableCell align="right">操作</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -71,6 +63,11 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                     size="small"
                     color={item.status === "active" ? "success" : "default"}
                   />
+                </TableCell>
+                <TableCell align="right">
+                  <Button component={Link} to={`/items/${item.id}/edit`} size="small">
+                    編集
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

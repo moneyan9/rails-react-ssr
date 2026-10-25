@@ -10,8 +10,14 @@ export const theme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
+        html: {
+          backgroundColor: "#fff",
+          colorScheme: "light",
+        },
         body: {
           minHeight: "100vh",
+          backgroundColor: "#fff",
+          color: "rgba(0, 0, 0, 0.87)",
         },
       },
     },
