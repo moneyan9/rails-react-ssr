@@ -1,0 +1,11 @@
+coffee:
+  sku: CF-200
+  name: オーガニックコーヒー 200g
+  unit_price: 1280
+  status: active
+
+mug:
+  sku: MG-100
+  name: マグカップ 白
+  unit_price: 1600
+  status: archived
