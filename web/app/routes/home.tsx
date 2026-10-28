@@ -2,11 +2,6 @@ import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Container from "@mui/material/Container";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
@@ -19,6 +14,7 @@ import Typography from "@mui/material/Typography";
 import { Link, useFetcher } from "react-router";
 
 import { deleteItem, readItems, type Item } from "../items/api";
+import { DeleteItemDialog } from "../items/delete-item-dialog";
 import type { Route } from "./+types/home";
 
 const yen = new Intl.NumberFormat("ja-JP", {
@@ -99,35 +95,12 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </TableBody>
         </Table>
       </TableContainer>
-      <Dialog
-        open={pending !== null}
-        onClose={() => {
-          if (!deleting) setPending(null);
-        }}
-      >
-        <DialogTitle>商品を削除</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {pending ? `${pending.sku} ${pending.name} を削除します。` : ""}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setPending(null)} disabled={deleting}>
-            キャンセル
-          </Button>
-          <Button
-            color="error"
-            variant="contained"
-            disabled={pending === null || deleting}
-            onClick={() => {
-              if (!pending) return;
-              fetcher.submit({ id: String(pending.id) }, { method: "delete" });
-            }}
-          >
-            削除
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteItemDialog
+        item={pending}
+        deleting={deleting}
+        onCancel={() => setPending(null)}
+        onConfirm={(item) => fetcher.submit({ id: String(item.id) }, { method: "delete" })}
+      />
     </Container>
   );
 }
