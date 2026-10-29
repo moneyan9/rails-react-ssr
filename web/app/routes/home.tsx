@@ -39,12 +39,12 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Home({ loaderData }: Route.ComponentProps) {
   const fetcher = useFetcher<typeof action>();
-  const [pending, setPending] = useState<Item | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<Item | null>(null);
   const deleting = fetcher.state !== "idle";
 
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data?.deleted) {
-      setPending(null);
+      setItemToDelete(null);
     }
   }, [fetcher.state, fetcher.data]);
 
@@ -86,7 +86,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                   <Button component={Link} to={`/items/${item.id}/edit`} size="small">
                     編集
                   </Button>
-                  <Button size="small" color="error" onClick={() => setPending(item)}>
+                  <Button size="small" color="error" onClick={() => setItemToDelete(item)}>
                     削除
                   </Button>
                 </TableCell>
@@ -96,9 +96,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         </Table>
       </TableContainer>
       <DeleteItemDialog
-        item={pending}
+        itemToDelete={itemToDelete}
         deleting={deleting}
-        onCancel={() => setPending(null)}
+        onCancel={() => setItemToDelete(null)}
         onConfirm={(item) => fetcher.submit({ id: String(item.id) }, { method: "delete" })}
       />
     </Container>

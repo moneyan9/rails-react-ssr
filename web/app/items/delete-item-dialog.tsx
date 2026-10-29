@@ -8,19 +8,19 @@ import DialogTitle from "@mui/material/DialogTitle";
 import type { Item } from "./api";
 
 export function DeleteItemDialog({
-  item,
+  itemToDelete,
   deleting,
   onCancel,
   onConfirm,
 }: {
-  item: Item | null;
+  itemToDelete: Item | null;
   deleting: boolean;
   onCancel: () => void;
   onConfirm: (item: Item) => void;
 }) {
   return (
     <Dialog
-      open={item !== null}
+      open={itemToDelete !== null}
       onClose={() => {
         if (!deleting) onCancel();
       }}
@@ -28,7 +28,7 @@ export function DeleteItemDialog({
       <DialogTitle>商品を削除</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {item ? `${item.sku} ${item.name} を削除します。` : ""}
+          {itemToDelete ? `${itemToDelete.sku} ${itemToDelete.name} を削除します。` : ""}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -38,10 +38,10 @@ export function DeleteItemDialog({
         <Button
           color="error"
           variant="contained"
-          disabled={item === null || deleting}
+          disabled={itemToDelete === null || deleting}
           onClick={() => {
-            if (!item) return;
-            onConfirm(item);
+            if (!itemToDelete) return;
+            onConfirm(itemToDelete);
           }}
         >
           削除

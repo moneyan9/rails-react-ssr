@@ -15,13 +15,13 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 export async function action({ params, request }: Route.ActionArgs) {
-  const result = await saveItem(
+  const validationError = await saveItem(
     `/api/v1/items/${params.id}`,
     "PATCH",
     itemInput(await request.formData()),
   );
 
-  if (result) return result;
+  if (validationError) return validationError;
 
   return redirect("/");
 }
@@ -34,7 +34,7 @@ export default function EditItem({ loaderData, actionData }: Route.ComponentProp
       </Typography>
       <ItemForm
         item={loaderData.item}
-        values={actionData?.values}
+        input={actionData?.input}
         errors={actionData?.errors}
         submitLabel="更新"
       />

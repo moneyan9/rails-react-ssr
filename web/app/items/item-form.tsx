@@ -8,12 +8,12 @@ import type { Item, ItemErrors, ItemInput } from "./api";
 
 export function ItemForm({
   item,
-  values,
+  input,
   errors,
   submitLabel,
 }: {
   item?: Pick<Item, "sku" | "name" | "unit_price" | "status">;
-  values?: ItemInput;
+  input?: ItemInput;
   errors?: ItemErrors;
   submitLabel: string;
 }) {
@@ -23,7 +23,7 @@ export function ItemForm({
         <TextField
           name="sku"
           label="SKU"
-          defaultValue={values?.sku ?? item?.sku ?? ""}
+          defaultValue={input?.sku ?? item?.sku ?? ""}
           error={Boolean(errors?.sku)}
           helperText={errors?.sku?.join(" ")}
           fullWidth
@@ -31,7 +31,7 @@ export function ItemForm({
         <TextField
           name="name"
           label="商品名"
-          defaultValue={values?.name ?? item?.name ?? ""}
+          defaultValue={input?.name ?? item?.name ?? ""}
           error={Boolean(errors?.name)}
           helperText={errors?.name?.join(" ")}
           fullWidth
@@ -40,7 +40,7 @@ export function ItemForm({
           name="unit_price"
           label="単価"
           type="number"
-          defaultValue={values?.unit_price ?? item?.unit_price ?? ""}
+          defaultValue={input?.unit_price ?? item?.unit_price ?? ""}
           error={Boolean(errors?.unit_price)}
           helperText={errors?.unit_price?.join(" ")}
           fullWidth
@@ -49,7 +49,7 @@ export function ItemForm({
           name="status"
           label="状態"
           select
-          defaultValue={values?.status ?? item?.status ?? "active"}
+          defaultValue={input?.status ?? item?.status ?? "active"}
           error={Boolean(errors?.status)}
           helperText={errors?.status?.join(" ")}
           slotProps={{ inputLabel: { shrink: true } }}

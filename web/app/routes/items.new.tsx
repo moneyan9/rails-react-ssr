@@ -11,9 +11,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const result = await saveItem("/api/v1/items", "POST", itemInput(await request.formData()));
+  const validationError = await saveItem("/api/v1/items", "POST", itemInput(await request.formData()));
 
-  if (result) return result;
+  if (validationError) return validationError;
 
   return redirect("/");
 }
@@ -25,7 +25,7 @@ export default function NewItem({ actionData }: Route.ComponentProps) {
         新規商品
       </Typography>
       <ItemForm
-        values={actionData?.values}
+        input={actionData?.input}
         errors={actionData?.errors}
         submitLabel="作成"
       />

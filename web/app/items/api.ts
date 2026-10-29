@@ -71,7 +71,7 @@ export async function saveItem(path: string, method: "POST" | "PATCH", input: It
 
   if (response.status === 422) {
     const body = (await response.json()) as { errors: ItemErrors };
-    return { errors: body.errors, values: input };
+    return { errors: body.errors, input };
   }
 
   ensureOk(response);
